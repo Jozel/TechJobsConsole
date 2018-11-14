@@ -13,6 +13,13 @@ namespace TechJobsConsole
         public static List<Dictionary<string, string>> FindAll()
         {
             LoadData();
+
+            List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+
+            foreach (Dictionary<string, string> job in AllJobs)
+            {
+                jobs.Add(job);
+            }
             return AllJobs;
         }
 
@@ -35,6 +42,7 @@ namespace TechJobsConsole
                     values.Add(aValue);
                 }
             }
+            values.Sort();
             return values;
         }
 
@@ -49,9 +57,37 @@ namespace TechJobsConsole
             {
                 string aValue = row[column];
 
-                if (aValue.Contains(value))
+                if (0 <= aValue.IndexOf(value, System.StringComparison.CurrentCultureIgnoreCase))
                 {
                     jobs.Add(row);
+                }
+            }
+
+            return jobs;
+        }
+
+        /*
+         * Load and parse data from job_data.csv
+         */
+        public static List<Dictionary<string, string>> FindByValue(string value)
+        {
+            // load data, if not already loaded
+            LoadData();
+
+            List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+
+            foreach (Dictionary<string, string> row in AllJobs)
+            {
+                bool added = false;
+                foreach (KeyValuePair<string, string> col in row)
+                {
+                    // checks if this row has been added and if the search term is in the value
+                    if ((added == false) && (0 <= (col.Value.IndexOf(value, System.StringComparison.CurrentCultureIgnoreCase))))
+                    {
+                        jobs.Add(row);
+                        added = true;
+                    }
+
                 }
             }
 
@@ -138,5 +174,7 @@ namespace TechJobsConsole
 
             return rowValues.ToArray();
         }
+
     }
 }
+
